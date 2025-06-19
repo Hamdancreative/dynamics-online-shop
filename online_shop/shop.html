@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlexShop</title>
+  <style>
+    /* Base styles */
+    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body {
+      margin: 0;
+      background: #f2f2f2;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    header, nav {
+      background: #3a86ff;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color 0.3s;
+    }
+    nav {
+      background: #4361ee;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+      margin: 0; padding: 0;
+    }
+    nav ul li a, nav button {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 1rem;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    nav ul li a:hover, nav button:hover {
+      text-decoration: underline;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 2rem;
+      justify-content: center;
+    }
+    .product-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      width: 220px;
+      overflow: hidden;
+      transition: transform 0.2s;
+      display: block;
+    }
+    .product-card:hover { transform: translateY(-5px); }
+    .product-image img {
+      width: 100%; height: 160px;
+      object-fit: cover;
+    }
+    .product-details {
+      padding: 1rem; text-align: center;
+    }
+    .price { color: #3a86ff; font-weight: bold; margin: 0.5rem 0; }
+    .add-to-cart {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: #ff006e;
+      color: white;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .add-to-cart:hover { background: #d6005e; }
+    #login-page {
+      display: flex;
+      height: 100vh;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to bottom right, #3a86ff, #8338ec);
+      color: white;
+      transition: background-color 0.3s;
+    }
+    .login-box {
+      background: white;
+      color: #333;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 300px;
+    }
+    .login-box input {
+      width: 100%;
+      padding: 0.6rem;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .login-box button {
+      width: 100%;
+      padding: 0.7rem;
+      background: #3a86ff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #dashboard, #cart-page { display: none; }
+    .cart-section {
+      padding: 1rem 2rem;
+      background: #ffffff;
+      border-top: 1px solid #ddd;
+      max-width: 800px;
+      margin: 1rem auto;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      background: #f9f9f9;
+      border-left: 4px solid #3a86ff;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .cart-item span {
+      flex: 1 1 60%;
+      min-width: 150px;
+    }
+    .remove-btn {
+      background: #ff4d4d;
+      border: none;
+      padding: 0.3rem 0.6rem;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      flex: 1 1 30%;
+      min-width: 80px;
+      max-width: 120px;
+    }
+    .remove-btn:hover { background: #d93636; }
+    #search {
+      padding: 0.5rem;
+      width: 300px;
+      margin: 1rem auto 0 auto;
+      display: block;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    /* Dark mode */
+    body.dark {
+      background: #121212;
+      color: #eee;
+    }
+    body.dark header, body.dark nav {
+      background: #1f1f1f;
+    }
+    body.dark .product-card {
+      background: #222;
+      box-shadow: 0 4px 12px rgba(255,255,255,0.05);
+    }
+    body.dark .product-details, body.dark .cart-section {
+      color: #eee;
+      background: #222;
+    }
+    body.dark .price {
+      color: #6ab7ff;
+    }
+    body.dark .add-to-cart {
+      background: #ff4d94;
+    }
+    body.dark .add-to-cart:hover {
+      background: #e03d85;
+    }
+    body.dark .remove-btn {
+      background: #ff7070;
+    }
+    body.dark .remove-btn:hover {
+      background: #d93d3d;
+    }
+    body.dark #search {
+      background: #333;
+      color: #eee;
+      border-color: #555;
+    }
+  </style>
+</head>
+<body>
+
+<section id="login-page">
+  <div class="login-box">
+    <h2>Welcome to FlexShop</h2>
+    <input type="text" id="username" placeholder="Enter username" />
+    <input type="password" id="password" placeholder="Enter password" />
+    <button onclick="login()">Login</button>
+  </div>
+</section>
+
+<section id="dashboard">
+  <nav>
+    <h2>FlexShop</h2>
+    <ul>
+      <li><a onclick="showDashboard()">Dashboard</a></li>
+      <li><a onclick="showCart()">Cart</a></li>
+      <li><button id="darkModeToggle" onclick="toggleDarkMode()">🌙 Dark Mode</button></li>
+    </ul>
+    <div style="margin-left:auto;">👤 <span id="user-display"></span> | 🛒 Cart (<span id="cart-count">0</span>)</div>
+  </nav>
+
+  <header>
+    <h1>All Products</h1>
+    <div>🛒 Cart (<span id="cart-count-header">0</span>)</div>
+  </header>
+
+  <!-- Search input -->
+  <input type="text" id="search" placeholder="Search products..." onkeyup="filterProducts()" />
+
+  <div class="container" id="product-grid"></div>
+</section>
+
+<section id="cart-page" style="max-width: 800px; margin: 2rem auto; display:none;">
+  <nav>
+    <h2>FlexShop</h2>
+    <ul>
+      <li><a onclick="showDashboard()">Back to Dashboard</a></li>
+      <li><button id="darkModeToggleCart" onclick="toggleDarkMode()">🌙 Dark Mode</button></li>
+    </ul>
+    <div style="margin-left:auto;">👤 <span id="user-display-cart"></span> | 🛒 Cart (<span id="cart-count-cartpage">0</span>)</div>
+  </nav>
+
+  <div class="cart-section" id="cart-section">
+    <h3>Your Cart</h3>
+    <div id="cart-items">
+      <p>No items in cart.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Data and state
+  let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+  let darkMode = localStorage.getItem('darkMode') === 'enabled';
+
+  // Elements
+  const loginPage = document.getElementById('login-page');
+  const dashboard = document.getElementById('dashboard');
+  const cartPage = document.getElementById('cart-page');
+  const userDisplay = document.getElementById('user-display');
+  const userDisplayCart = document.getElementById('user-display-cart');
+
+  function saveCart() {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }
+
+  function login() {
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("password").value.trim();
+
+    if (user && pass) {
+      loginPage.style.display = "none";
+      dashboard.style.display = "block";
+      userDisplay.textContent = user;
+      userDisplayCart.textContent = user;
+      updateCartDisplay();
+      applyDarkMode(); // Apply saved mode on login
+    } else {
+      alert("Please enter both username and password.");
+    }
+  }
+
+  // Show dashboard, hide cart page
+  function showDashboard() {
+    cartPage.style.display = "none";
+    dashboard.style.display = "block";
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  // Show cart page, hide dashboard
+  function showCart() {
+    dashboard.style.display = "none";
+    cartPage.style.display = "block";
+    updateCartDisplay();
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  // Update cart display on both pages
+  function updateCartDisplay() {
+    const cartCount = cartItems.reduce((total, item) => total + item.qty, 0);
+    document.querySelectorAll("#cart-count, #cart-count-header, #cart-count-cartpage").forEach(el => el.textContent = cartCount);
+
+    const cartContainers = [
+      document.getElementById("cart-items")
+    ];
+    
+    cartContainers.forEach(cartContainer => {
+      if (cartItems.length === 0) {
+        cartContainer.innerHTML = "<p>No items in cart.</p>";
+        return;
+      }
+      cartContainer.innerHTML = "";
+      cartItems.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+          <span>${item.title} – ${item.price} x 
+            <input type="number" min="1" value="${item.qty}" onchange="updateQty(${index}, this.value)" style="width:50px" />
+          </span>
+          <button class="remove-btn" onclick="removeItem(${index})">❌ Remove</button>
+        `;
+        cartContainer.appendChild(div);
+      });
+      // Total price
+      let total = cartItems.reduce((sum, item) => {
+        const amount = parseInt(item.price.replace(/[^0-9]/g, ""));
+        return sum + amount * item.qty;
+      }, 0);
+      const totalEl = document.createElement("div");
+      totalEl.style.marginTop = "1rem";
+      totalEl.style.fontWeight = "bold";
+      totalEl.innerText = "Total: TSh " + total.toLocaleString();
+      cartContainer.appendChild(totalEl);
+    });
+
+    saveCart();
+  }
+
+  function updateQty(index, qty) {
+    qty = parseInt(qty);
+    if (qty > 0) {
+      cartItems[index].qty = qty;
+      updateCartDisplay();
+    }
+  }
+
+  function removeItem(index) {
+    cartItems.splice(index, 1);
+    updateCartDisplay();
+  }
+
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('add-to-cart')) {
+      e.preventDefault();
+      const title = e.target.dataset.title;
+      const price = e.target.dataset.price;
+
+      const existing = cartItems.find(item => item.title === title);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cartItems.push({ title, price, qty: 1 });
+      }
+
+      updateCartDisplay();
+    }
+  });
+
+  function filterProducts() {
+    const query = document.getElementById("search").value.toLowerCase();
+    const cards = document.querySelectorAll(".product-card");
+    cards.forEach(card => {
+      const title = card.querySelector("h2").innerText.toLowerCase();
+      card.style.display = title.includes(query) ? "block" : "none";
+    });
+  }
+
+  // Products array
+  const products = [
+    { title: "Wireless Mouse", price: "TSh 25,000", img: "https://m.media-amazon.com/images/I/61LtuGzXeaL._AC_SL1500_.jpg" },
+    { title: "Mechanical Keyboard", price: "TSh 120,000", img: "image.png" },
+    { title: "External Hard Drive 1TB", price: "TSh 150,000", img: "image copy.png" },
+    { title: "Raspberry Pi 4 Kit", price: "TSh 220,000", img: "image copy 2.png" },
+    { title: "USB‑C Hub (6‑in‑1)", price: "TSh 60,000", img: "image copy 3.png" },
+    { title: "ESP32 Dev Board", price: "TSh 35,000", img: "image copy 4.png" }
+  ];
+
+  // Render products
+  const productGrid = document.getElementById("product-grid");
+  products.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.innerHTML = `
+      <div class="product-image">
+        <img src="${p.img}" alt="${p.title}" />
+      </div>
+      <div class="product-details">
+        <h2>${p.title}</h2>
+        <div class="price">${p.price}</div>
+        <a href="#" class="add-to-cart" data-title="${p.title}" data-price="${p.price}">Add to Cart</a>
+      </div>
+    `;
+    productGrid.appendChild(card);
+  });
+
+  // Dark mode toggle
+  function applyDarkMode() {
+    if(darkMode) {
+      document.body.classList.add('dark');
+      document.getElementById('darkModeToggle').textContent = "☀️ Light Mode";
+      document.getElementById('darkModeToggleCart').textContent = "☀️ Light Mode";
+    } else {
+      document.body.classList.remove('dark');
+      document.getElementById('darkModeToggle').textContent = "🌙 Dark Mode";
+      document.getElementById('darkModeToggleCart').textContent = "🌙 Dark Mode";
+    }
+  }
+
+  function toggleDarkMode() {
+    darkMode = !darkMode;
+    localStorage.setItem('darkMode', darkMode ? 'enabled' : 'disabled');
+    applyDarkMode();
+  }
+
+  // On page load
+  window.addEventListener('load', () => {
+    if (cartItems.length > 0) updateCartDisplay();
+    applyDarkMode();
+  });
+</script>
+
+</body>
+</html>
